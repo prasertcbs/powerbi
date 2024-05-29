@@ -1,0 +1,47 @@
+FiscalCalendar = 
+VAR FiscalYearEndMonth = 9
+VAR startDate = MIN ( POS[trans_date] )
+VAR endDate = MAX ( POS[trans_date] )
+RETURN
+    ADDCOLUMNS (
+        CALENDAR ( startDate, endDate ),
+        // CALENDAR ( MIN ( POS[trans_date] ), MAX ( POS[trans_date] ) ),
+        "Year", YEAR ( [Date] ),
+        "Quarter", FORMAT ( [Date], "\Qq" ),
+        "Month", MONTH ( [Date] ),
+        "Month name", FORMAT ( [Date], "mmm" ),
+        "Month name Thai",
+            SWITCH (
+                MONTH ( [Date] ),
+                1, "มกราคม",
+                2, "กุมภาพันธ์",
+                3, "มีนาคม",
+                4, "เมษายน",
+                5, "พฤษภาคม",
+                6, "มิถุนายน",
+                7, "กรกฎาคม",
+                8, "สิงหาคม",
+                9, "กันยายน",
+                10, "ตุลาคม",
+                11, "พฤศจิกายน",
+                12, "ธันวาคม",
+                BLANK ()
+            ),
+        "Day name", FORMAT ( [Date], "ddd" ),
+		"Day name Thai", SWITCH (
+                WEEKDAY ( [Date], 2 ),
+                1, "จันทร์",
+                2, "อังคาร",
+                3, "พุธ",
+                4, "พฤหัสบดี",
+                5, "ศุกร์",
+                6, "เสาร์",
+                7, "อาทิตย์",
+                BLANK ()
+            ),
+        "Day name sort order", WEEKDAY ( [Date], 2 ),
+        "Weekend", IF ( WEEKDAY ( [Date], 2 ) > 5, TRUE (), FALSE () ),
+        "Fiscal month", MONTH ( EDATE ( [Date], -FiscalYearEndMonth ) ),
+        "Fiscal quarter", FORMAT ( EDATE ( [Date], -FiscalYearEndMonth ), "\Qq" ),
+        "Fiscal year", 1 + YEAR ( EDATE ( [Date], -FiscalYearEndMonth ) )
+    )
